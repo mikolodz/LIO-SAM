@@ -4,7 +4,7 @@
     <arg name="imu_topic" default="imu_correct" />
     <arg name="gnss_topic" default="gps/fix" />
 
-    <env name="ROSCONSOLE_CONFIG_FILE" value="$(find lio_sam)/launch/include/rosconsole/rosconsole_error.conf"/>
+    <!-- <env name="ROSCONSOLE_CONFIG_FILE" value="$(find lio_sam)/launch/include/rosconsole/rosconsole_error.conf"/> -->
     
     <!-- EKF GPS-->
     <node pkg="robot_localization" type="ekf_localization_node" name="ekf_gps" respawn="true">
@@ -16,7 +16,7 @@
         <!-- <rosparam param="datum">[42.35893211, -71.09345588, 0.0, world, base_link]</rosparam> -->
         <remap from="imu/data" to="$(arg imu_topic)" />
         <remap from="gps/fix" to="$(arg gnss_topic)" />
-        <remap from="odometry/filtered" to="odometry/navsat" />
+        <remap from="odometry/filtered" to="odometry/imu" />
     </node>
 
 </launch>
