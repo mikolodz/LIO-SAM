@@ -1397,20 +1397,32 @@ public:
     void addGPSFactor()
     {
         if (gpsQueue.empty())
+        {
+            ROS_INFO("GPS Factor: GPS Queue empty");
             return;
+        }
 
         // wait for system initialized and settles down
         if (cloudKeyPoses3D->points.empty())
+        {
+            ROS_INFO("GPS Factor: wait for system initialized and settles down");
             return;
+        }
         else
         {
             if (pointDistance(cloudKeyPoses3D->front(), cloudKeyPoses3D->back()) < 5.0)
+            {
+                ROS_INFO("GPS Factor: wait for system initialized and settles down");
                 return;
+            }
         }
 
         // pose covariance small, no need to correct
         if (poseCovariance(3,3) < poseCovThreshold && poseCovariance(4,4) < poseCovThreshold)
+        {
+            ROS_INFO("GPS Factor: pose covariance small, no need to correct");
             return;
+        }
 
         // last gps position
         static PointType lastGPSPoint;
@@ -1425,6 +1437,7 @@ public:
             else if (gpsQueue.front().header.stamp.toSec() > timeLaserInfoCur + 0.2)
             {
                 // message too new
+                ROS_INFO("GPS Factor: Message too new");
                 break;
             }
             else
@@ -1437,7 +1450,10 @@ public:
                 float noise_y = thisGPS.pose.covariance[7];
                 float noise_z = thisGPS.pose.covariance[14];
                 if (noise_x > gpsCovThreshold || noise_y > gpsCovThreshold)
+                {
+                    ROS_INFO("GPS Factor: Too noisy");
                     continue;
+                }
 
                 float gps_x = thisGPS.pose.pose.position.x;
                 float gps_y = thisGPS.pose.pose.position.y;
@@ -1449,16 +1465,20 @@ public:
                 }
 
                 // GPS not properly initialized (0,0,0)
-                if (abs(gps_x) < 1e-6 && abs(gps_y) < 1e-6)
+                if (abs(gps_x) < 1e-6 && abs(gps_y) < 1e-6){
+                    ROS_INFO("GPS Factor: (x,y,z)=(0,0,0) !");
                     continue;
+                }
 
                 // Add GPS every a few meters
                 PointType curGPSPoint;
                 curGPSPoint.x = gps_x;
                 curGPSPoint.y = gps_y;
                 curGPSPoint.z = gps_z;
-                if (pointDistance(curGPSPoint, lastGPSPoint) < 5.0)
+                if (pointDistance(curGPSPoint, lastGPSPoint) < 5.0){
+                    ROS_INFO("GPS Factor: too close");
                     continue;
+                }
                 else
                     lastGPSPoint = curGPSPoint;
 
@@ -1467,6 +1487,7 @@ public:
                 noiseModel::Diagonal::shared_ptr gps_noise = noiseModel::Diagonal::Variances(Vector3);
                 gtsam::GPSFactor gps_factor(cloudKeyPoses3D->size(), gtsam::Point3(gps_x, gps_y, gps_z), gps_noise);
                 gtSAMgraph.add(gps_factor);
+                ROS_INFO("GPS Factor: added");
 
                 aLoopIsClosed = true;
                 break;
