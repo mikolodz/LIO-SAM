@@ -13,7 +13,7 @@
 
     <!--- Run Navsat -->
     <include file="$(find lio_sam)/launch/include/module_navsat.launch" />
-    <!-- <include file="$(find lio_sam)/launch/navsat_rtk.launch" /> -->
+    <include file="$(find lio_sam)/launch/navsat_rtk.launch" />
 
     <!--- Run Rviz-->
     <include file="$(find lio_sam)/launch/include/module_rviz.launch" />
