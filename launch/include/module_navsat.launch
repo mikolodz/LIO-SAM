@@ -16,7 +16,7 @@
         <!-- <rosparam param="datum">[42.35893211, -71.09345588, 0.0, world, base_link]</rosparam> -->
         <remap from="imu/data" to="$(arg imu_topic)" />
         <remap from="gps/fix" to="$(arg gnss_topic)" />
-        <remap from="odometry/filtered" to="odometry/imu" />
+        <remap from="odometry/filtered" to="odometry/navsat" />
     </node>
 
 </launch>

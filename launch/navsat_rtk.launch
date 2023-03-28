@@ -1,0 +1,25 @@
+<launch>
+  <env name="ROSCONSOLE_CONFIG_FILE" value="$(find lio_sam)/launch/include/rosconsole/rosconsole_error.conf"/>
+
+  <node pkg="robot_localization" type="navsat_transform_node" name="navsat_rtk" respawn="true">
+
+    <param name="magnetic_declination_radians" value="0"/>
+
+    <param name="yaw_offset" value="0"/>
+
+    <remap from="/imu/data" to="/imu_raw" />
+    <remap from="/gps/fix" to="/fix" />
+    <remap from="/odometry/filtered" to="/odometry/navsat_rtk" />
+    <remap from="/odometry/gps" to="/odometry/rtk" />
+
+  </node>
+
+  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_rtk" respawn="true">
+        <remap from="odometry/filtered" to="odometry/navsat_rtk" />
+    </node>
+
+  <node pkg="tf" type="static_transform_publisher"
+    name="rtk_link_broadcaster"
+    args="0 0 0 0 0 0 base_link gps 10" />
+
+</launch>
