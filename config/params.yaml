@@ -2,7 +2,7 @@ lio_sam:
 
   # Topics
   pointCloudTopic: "points_raw"               # Point cloud data
-  imuTopic: "imu_raw"                         # IMU data
+  imuTopic: "imu_raw"                         # IMU data (imu_raw and imu_correct use different rotation matrix as shown below)
   odomTopic: "odometry/imu"                   # IMU pre-preintegration odometry, same frequency as IMU
   gpsTopic: "odometry/gps"                   # GPS odometry topic from navsat, see module_navsat.launch file
 
@@ -15,7 +15,7 @@ lio_sam:
   # GPS Settings
   useImuHeadingInitialization: true           # if using GPS data, set to "true"
   useGpsElevation: false                      # if GPS elevation is bad, set to "false"
-  gpsCovThreshold: 20.0 #2.0                        # m^2, threshold for using GPS data
+  gpsCovThreshold: 2.0                        # m^2, threshold for using GPS data
   poseCovThreshold: 25.0                      # m^2, threshold for using GPS data
   
   # Export settings
@@ -40,19 +40,20 @@ lio_sam:
 
   # Extrinsics: T_lb (lidar -> imu)
   extrinsicTrans: [0.0, 0.0, 0.0]
-  # extrinsicRot: [-1, 0, 0,
+  # These Rotation Matrixes is for imu_raw of the park dataset
+  extrinsicRot: [-1, 0, 0,
+                  0, 1, 0,
+                  0, 0, -1]
+  extrinsicRPY: [0, -1, 0,
+                 1, 0, 0,
+                 0, 0, 1]
+  # These Rotation Matrixes is for imu_correct of the park dataset
+  # extrinsicRot: [1, 0, 0,
   #                 0, 1, 0,
-  #                 0, 0, -1]
-  # extrinsicRPY: [0, -1, 0,
-  #                1, 0, 0,
-  #                0, 0, 1]
-  # # extrinsicTrans: [0.01, 0.02, 0.15]
-  extrinsicRot: [1, 0, 0,
-                  0, 1, 0,
-                  0, 0, 1]
-  extrinsicRPY: [1, 0, 0,
-                  0, 1, 0,
-                  0, 0, 1]
+  #                 0, 0, 1]
+  # extrinsicRPY: [1, 0, 0,
+  #                 0, 1, 0,
+  #                 0, 0, 1]
 
   # LOAM feature threshold
   edgeThreshold: 1.0
