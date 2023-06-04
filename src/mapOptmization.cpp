@@ -60,6 +60,7 @@ public:
     Values isamCurrentEstimate;
     Eigen::MatrixXd poseCovariance;
 
+    ros::Publisher pubProcessTime;
     ros::Publisher pubLaserCloudSurround;
     ros::Publisher pubLaserOdometryGlobal;
     ros::Publisher pubLaserOdometryIncremental;
@@ -161,6 +162,7 @@ public:
         parameters.relinearizeSkip = 1;
         isam = new ISAM2(parameters);
 
+        pubProcessTime              = nh.advertise<std_msgs::Duration>("lio_sam/mapping/process_time", 1);
         pubKeyPoses                 = nh.advertise<sensor_msgs::PointCloud2>("lio_sam/mapping/trajectory", 1);
         pubLaserCloudSurround       = nh.advertise<sensor_msgs::PointCloud2>("lio_sam/mapping/map_global", 1);
         pubLaserOdometryGlobal      = nh.advertise<nav_msgs::Odometry> ("lio_sam/mapping/odometry", 1);
@@ -263,6 +265,9 @@ public:
             saveKeyFramesAndFactor();
 
             correctPoses();
+            std_msgs::Duration process_time;
+            process_time.data = ros::Time::now() - timeLaserInfoStamp;
+            pubProcessTime.publish(process_time);
 
             publishOdometry();
 
